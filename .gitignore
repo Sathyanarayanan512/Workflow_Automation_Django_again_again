@@ -14,3 +14,7 @@ ENV/
 # IDE files
 .vscode/
 .idea/
+
+# Deployment
+staticfiles/
+*.sqlite3
