@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Requests</title>
+    <style>
+        table,tr,th,td{
+            width: 75%;
+            border: 2px solid black;
+            border-collapse: collapse;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h3>Works - Approvals Pending</h3>
+    {% if worker.department.dept_name == 'Management' %}
+    <h4>Regular Bills Requests</h4>
+    <table>
+        <thead>
+            <th>STEP NO</th>
+            <th>TOTAL STEPS</th>
+            <th>REQUEST ID</th>
+            <th>REQUEST NAME</th>
+            <th>CREATED-REQUEST ID</th>
+            <th>STATUS</th>
+            <th>BILL AMOUNT</th>
+            <th>ACTION</th>
+        </thead>
+        <tbody>
+            {% for i in regular_bills_requests_details %}
+            <tr>
+            <td>{{i.step_no}}</td>
+            <td>{{i.total_steps}}</td>
+            <td>{{i.request_id}}</td>
+            <td>{{i.request_name}}</td>
+            <td>{{i.created_request_id}}</td>
+            <td>{{i.status}}</td>
+            <td>{{regular_bills_requests_details.i.bill_amount}}</td>
+            <td><a href="{% url 'approve' worker.id i.created_request_id %}"><button>Approve</button></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <h4>Purchase Requests</h4>
+    <table>
+        <thead>
+            <th>STEP NO</th>
+            <th>TOTAL STEPS</th>
+            <th>REQUEST ID</th>
+            <th>REQUEST NAME</th>
+            <th>CREATED-REQUEST ID</th>
+            <th>STATUS</th>
+            <th>BILL AMOUNT</th>
+            <th>ACTION</th>
+        </thead>
+        <tbody>
+            {% for i in purchase_requests_details %}
+            <tr>
+            <td>{{i.step_no}}</td>
+            <td>{{i.total_steps}}</td>
+            <td>{{i.request_id}}</td>
+            <td>{{i.request_name}}</td>
+            <td>{{i.created_request_id}}</td>
+            <td>{{i.status}}</td>
+            <td>{{purchase_requests_details.i.amount}}</td>
+            <td><a href="{% url 'approve' worker.id i.created_request_id %}"><button>Approve</button></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <h4>Leave Requests</h4>
+    <table>
+        <thead>
+            <th>STEP NO</th>
+            <th>TOTAL STEPS</th>
+            <th>REQUEST ID</th>
+            <th>REQUEST NAME</th>
+            <th>CREATED-REQUEST ID</th>
+            <th>STATUS</th>
+            <th>REASON</th>
+            <th>NO OF DAYS</th>
+            <th>ACTION</th>
+        </thead>
+        <tbody>
+            {% for i in leave_requests_details %}
+            <tr>
+            <td>{{i.step_no}}</td>
+            <td>{{i.total_steps}}</td>
+            <td>{{i.request_id}}</td>
+            <td>{{i.request_name}}</td>
+            <td>{{i.created_request_id}}</td>
+            <td>{{i.status}}</td>
+            <td>{{leave_requests_details.i.reason}}</td>
+            <td>{{leave_requests_details.i.days}}</tr>
+            <td><a href="{% url 'approve' worker.id i.created_request_id %}"><button>Approve</button></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    {% elif worker.department.dept_name == 'Finance' %}
+    <h4>Regular Bills Requests</h4>
+    <table>
+        <thead>
+            <th>STEP NO</th>
+            <th>TOTAL STEPS</th>
+            <th>REQUEST ID</th>
+            <th>REQUEST NAME</th>
+            <th>CREATED-REQUEST ID</th>
+            <th>STATUS</th>
+            <th>BILL AMOUNT</th>
+            <th>ACTION</th>
+        </thead>
+        <tbody>
+            {% for i in regular_bills_requests_details %}
+            <tr>
+            <td>{{i.step_no}}</td>
+            <td>{{i.total_steps}}</td>
+            <td>{{i.request_id}}</td>
+            <td>{{i.request_name}}</td>
+            <td>{{i.created_request_id}}</td>
+            <td>{{i.status}}</td>
+            <td>{{regular_bills_requests_details.i.bill_amount}}</td>
+            <td><a href="{% url 'approve' worker.id i.created_request_id %}"><button>Approve</button></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    <h4>Purchase Requests</h4>
+    <table>
+        <thead>
+            <th>STEP NO</th>
+            <th>TOTAL STEPS</th>
+            <th>REQUEST ID</th>
+            <th>REQUEST NAME</th>
+            <th>CREATED-REQUEST ID</th>
+            <th>STATUS</th>
+            <th>AMOUNT</th>
+            <th>ACTION</th>
+        </thead>
+        <tbody>
+            {% for i in purchase_requests_details %}
+            <tr>
+            <td>{{i.step_no}}</td>
+            <td>{{i.total_steps}}</td>
+            <td>{{i.request_id}}</td>
+            <td>{{i.request_name}}</td>
+            <td>{{i.created_request_id}}</td>
+            <td>{{i.status}}</td>
+            <td>{{purchase_requests_details.i.amount}}</td>
+            <td><a href="{% url 'approve' worker.id i.created_request_id %}"><button>Approve</button></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    {% elif worker.department.dept_name == 'IT' %}
+    <table>
+        <thead>
+            <th>STEP NO</th>
+            <th>TOTAL STEPS</th>
+            <th>REQUEST ID</th>
+            <th>REQUEST NAME</th>
+            <th>CREATED-REQUEST ID</th>
+            <th>STATUS</th>
+            <th>REASON</th>
+            <th>NO OF DAYS</th>
+            <th>ACTION</th>
+        </thead>
+        <tbody>
+            {% for i in leave_requests_details %}
+            <tr>
+            <td>{{i.step_no}}</td>
+            <td>{{i.total_steps}}</td>
+            <td>{{i.request_id}}</td>
+            <td>{{i.request_name}}</td>
+            <td>{{i.created_request_id}}</td>
+            <td>{{i.status}}</td>
+            <td>{{leave_requests_details.i.reason}}</td>
+            <td>{{leave_requests_details.i.days}}</td>
+            <td><a href="{% url 'approve' worker.id i.created_request_id %}"><button>Approve</button></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,1085 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Generation</title>
+    <style>
+        table,tr,th,td{
+            width: 75%;
+            border: 2px solid black;
+            border-collapse: collapse;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h4>{% if bill_amount %}Bill Amount: {{bill_amount}}{% elif amount %}Amount : {{amount}}{% elif reason %}Reason: {{reason}}{% endif %}</h4>
+    <h4>{% if days %}Days: {{days}}{% endif %}</h4>
+    {% if workflowsteps %}
+    <table>
+        <thead>
+            <th>REQUEST ID</th>
+            <th>REQUEST NAME</th>
+            <th>CREATED-REQUEST ID</th>
+            <th>DEPT</th>
+            <th>APPR ID</th>
+            <th>APPR NAME</th>
+            <th>WORK STATUS</th>
+        </thead>
+        <tbody>
+            {% for i in workflowsteps %}
+            <tr>
+                <td>{{i.request_id}}</td>
+                <td>{{i.request_name}}</td>
+                <td>{{i.created_request_id}}</td>
+                <td>{{i.dept_name}}</td>
+                <td>{{i.approver_id}}</td>
+                <td>{{i.approver_name}}</td>
+                <td>{{i.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    {% endif %}
+    <br>
+    <a href="{% url 'finishmakingflow' cr_id %}"><button>FINISH</button></a><br><br>
+    <form action="{% url 'loadgenerateworkflow' cr_id %}" method="post">
+        {% csrf_token %}
+        <label>ID: </label>
+        <input type="number" name="user-id"/>
+        <label>DEPARTMENT: </label>
+        <input type="text" name="user-department"/>
+        <input type="submit" value="Search"/>
+    </form>
+    <table>
+        <thead>
+            <tr>
+            <th>ID</th>
+            <th>NAME</th>
+            <th>USERNAME</th>
+            <th>PASSWORD</th>
+            <th>ROLE</th>
+            <th>DEPARTMENT ID</th>
+            <th>DEPARTMENT NAME</th>
+            <th>ADD TO WORKFLOW</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for x  in users %}
+            <tr>
+            <td>{{x.id}}</td>
+            <td>{{x.name}}</td>
+            <td>{{x.username}}</td>
+            <td>{{x.password}}</td>
+            <td>{{x.role}}</td>
+            <td>{{x.department_id}}</td>
+            <td>{{x.department.dept_name}}</td>
+            <td><a href="{% url 'generateworkflowstep' x.id cr_id %}"><button>Add</button></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+</body>
+</html> -->
+
+
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workflow Generation | Workflow Automation</title>
+
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body {
+        min-height: 100vh;
+        margin: 0;
+        background: #f4f6fb;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: #1f2937;
+    }
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 10px 17px;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #4f46e5;
+        border: 1px solid #c7d2fe;
+        text-decoration: none;
+        font-size: 0.86rem;
+        font-weight: 650;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .back-btn:hover {
+        background: #4f46e5;
+        border-color: #4f46e5;
+        color: #ffffff;
+    }
+    /* Navbar */
+    .navbar {
+        background: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .navbar-brand {
+        color: #4f46e5 !important;
+        font-weight: 750;
+        letter-spacing: 0.3px;
+    }
+
+    .navbar-section {
+        color: #6b7280;
+        font-size: 0.84rem;
+    }
+
+    /* Main Container */
+    .page-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 25px 60px;
+    }
+
+    /* Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-header h1 {
+        color: #111827;
+        font-size: 2rem;
+        font-weight: 750;
+        margin-bottom: 6px;
+    }
+
+    .page-header p {
+        color: #6b7280;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .finish-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 11px 19px;
+        border-radius: 9px;
+        background: #059669;
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 700;
+        box-shadow: 0 7px 18px rgba(5, 150, 105, 0.18);
+        transition: all 0.2s ease;
+    }
+
+    .finish-btn:hover {
+        background: #047857;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+    /* Request Info */
+    .request-info-card {
+        background: linear-gradient(135deg, #4f46e5, #6366f1);
+        border-radius: 17px;
+        color: #ffffff;
+        padding: 25px 28px;
+        margin-bottom: 30px;
+        box-shadow: 0 12px 30px rgba(79, 70, 229, 0.18);
+    }
+
+    .request-info-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        opacity: 0.75;
+        margin-bottom: 12px;
+    }
+
+    .request-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .detail-item {
+        background: rgba(255, 255, 255, 0.13);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        padding: 10px 15px;
+    }
+
+    .detail-label {
+        display: block;
+        font-size: 0.68rem;
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-bottom: 2px;
+    }
+
+    .detail-value {
+        font-size: 0.92rem;
+        font-weight: 650;
+    }
+
+    /* Section */
+    .section {
+        margin-bottom: 35px;
+    }
+
+    .section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+    }
+
+    .section-heading-left {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .section-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #eef2ff;
+        color: #4f46e5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .section-heading h4 {
+        margin: 0;
+        color: #1f2937;
+        font-size: 1.08rem;
+        font-weight: 700;
+    }
+
+    .section-heading p {
+        margin: 3px 0 0;
+        color: #6b7280;
+        font-size: 0.78rem;
+    }
+
+    /* Workflow Table */
+    .table-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 7px 25px rgba(31, 41, 55, 0.06);
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .workflow-table {
+        min-width: 850px;
+        margin: 0;
+        vertical-align: middle;
+    }
+
+    .workflow-table thead th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.35px;
+        padding: 15px 14px;
+        white-space: nowrap;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .workflow-table tbody td {
+        color: #4b5563;
+        font-size: 0.84rem;
+        padding: 15px 14px;
+        white-space: nowrap;
+        border-bottom: 1px solid #eef0f4;
+    }
+
+    .workflow-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .workflow-table tbody tr:hover {
+        background: #f8faff;
+    }
+
+    .workflow-request-id {
+        color: #6366f1;
+        font-family: "Courier New", monospace;
+        font-weight: 600;
+    }
+
+    .workflow-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 11px;
+        border-radius: 50px;
+        background: #fef3c7;
+        color: #b45309;
+        font-size: 0.71rem;
+        font-weight: 700;
+    }
+
+    .workflow-status-dot {
+        width: 6px;
+        height: 6px;
+        background: currentColor;
+        border-radius: 50%;
+    }
+
+    /* Empty Workflow */
+    .empty-workflow {
+        padding: 42px 20px;
+        text-align: center;
+        color: #9ca3af;
+    }
+
+    .empty-workflow-icon {
+        width: 55px;
+        height: 55px;
+        margin: 0 auto 12px;
+        border-radius: 14px;
+        background: #eef2ff;
+        color: #4f46e5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+    }
+
+    .empty-workflow h5 {
+        color: #4b5563;
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .empty-workflow p {
+        margin: 0;
+        font-size: 0.8rem;
+    }
+
+    /* Search Card */
+    .search-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 7px 25px rgba(31, 41, 55, 0.06);
+        margin-bottom: 16px;
+    }
+
+    .search-card-header {
+        margin-bottom: 20px;
+    }
+
+    .search-card-header h5 {
+        color: #1f2937;
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .search-card-header p {
+        color: #6b7280;
+        font-size: 0.8rem;
+        margin: 0;
+    }
+
+    .search-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 13px;
+        align-items: end;
+    }
+
+    .form-label {
+        color: #374151;
+        font-size: 0.78rem;
+        font-weight: 650;
+        margin-bottom: 7px;
+    }
+
+    .form-control {
+        min-height: 45px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        font-size: 0.86rem;
+        padding: 9px 13px;
+    }
+
+    .form-control:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    }
+
+    .search-btn {
+        min-height: 45px;
+        padding: 9px 20px;
+        border: none;
+        border-radius: 9px;
+        background: #4f46e5;
+        color: #ffffff;
+        font-weight: 650;
+        font-size: 0.84rem;
+        transition: all 0.2s ease;
+    }
+
+    .search-btn:hover {
+        background: #4338ca;
+        transform: translateY(-1px);
+    }
+
+    /* Employee Table */
+    .employee-table {
+        min-width: 1100px;
+        margin: 0;
+        vertical-align: middle;
+    }
+
+    .employee-table thead th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 0.71rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.35px;
+        padding: 14px 13px;
+        white-space: nowrap;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .employee-table tbody td {
+        color: #4b5563;
+        font-size: 0.83rem;
+        padding: 14px 13px;
+        white-space: nowrap;
+        border-bottom: 1px solid #eef0f4;
+    }
+
+    .employee-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .employee-table tbody tr:hover {
+        background: #f8faff;
+    }
+
+    .employee-name {
+        color: #1f2937;
+        font-weight: 650;
+    }
+
+    .employee-role {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 50px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    .add-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        min-width: 85px;
+        padding: 8px 13px;
+        border-radius: 8px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        color: #4338ca;
+        text-decoration: none;
+        font-size: 0.76rem;
+        font-weight: 700;
+        transition: all 0.2s ease;
+    }
+
+    .add-btn:hover {
+        background: #4f46e5;
+        border-color: #4f46e5;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+    /* Bottom Finish */
+    .bottom-action {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+
+        .page-container {
+            padding: 28px 15px 45px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .page-header h1 {
+            font-size: 1.65rem;
+        }
+
+        .finish-btn {
+            width: 100%;
+        }
+
+        .request-info-card {
+            padding: 21px;
+        }
+
+        .request-details {
+            flex-direction: column;
+        }
+
+        .detail-item {
+            width: 100%;
+        }
+
+        .search-form {
+            grid-template-columns: 1fr;
+        }
+
+        .search-btn {
+            width: 100%;
+        }
+
+        .bottom-action {
+            justify-content: stretch;
+        }
+
+        .bottom-action .finish-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+</head> <body>
+<!-- Navigation -->
+<nav class="navbar py-3">
+    <div class="container-fluid px-4">
+
+        <a class="navbar-brand" href="{% url 'loaddashboard' %}">
+            Workflow Automation
+        </a>
+
+        <span class="navbar-section">
+            Admin • Workflow Builder
+        </span>
+
+    </div>
+</nav>
+
+<!-- Main -->
+<main class="page-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+
+        <div>
+
+            <h1>Workflow Generation</h1>
+            
+            <p>
+                Build the approval sequence by adding employees to the workflow.
+            </p>
+    
+
+        </div>
+        <div style="display: flex; align-items: center; gap: 60px;">
+            <a href="{% url 'loaddashboard' %}" class="back-btn">
+                ← Go Back
+            </a>
+        <a href="{% url 'finishmakingflow' cr_id %}"
+           class="finish-btn">
+             Finish Workflow
+        </a>
+        </div>
+
+    </div>
+
+    <!-- Request Information -->
+    <div class="request-info-card">
+
+        <div class="request-info-title">
+            Current Request
+        </div>
+
+        <div class="request-details">
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Created Request ID
+                </span>
+
+                <span class="detail-value">
+                    {{cr_id}}
+                </span>
+
+            </div>
+
+            {% if bill_amount %}
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Bill Amount
+                </span>
+
+                <span class="detail-value">
+                    ₹ {{bill_amount}}
+                </span>
+
+            </div>
+
+            {% elif amount %}
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Purchase Amount
+                </span>
+
+                <span class="detail-value">
+                    ₹ {{amount}}
+                </span>
+
+            </div>
+
+            {% elif reason %}
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Leave Reason
+                </span>
+
+                <span class="detail-value">
+                    {{reason}}
+                </span>
+
+            </div>
+
+            {% endif %}
+
+            {% if days %}
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Leave Days
+                </span>
+
+                <span class="detail-value">
+                    {{days}} day(s)
+                </span>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- Current Workflow -->
+    <section class="section">
+
+        <div class="section-heading">
+
+            <div class="section-heading-left">
+
+                <!-- <div class="section-icon">
+                    🔗
+                </div> -->
+
+                <div>
+
+                    <h4>
+                        Current Workflow
+                    </h4>
+
+                    <p>
+                        Employees currently included in the approval sequence.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="table-card">
+
+            <div class="table-responsive">
+
+                {% if workflowsteps %}
+
+                <table class="table workflow-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Request Name</th>
+                            <th>Created Request ID</th>
+                            <th>Department</th>
+                            <th>Approver ID</th>
+                            <th>Approver Name</th>
+                            <th>Work Status</th>
+                            <th>Remove</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for i in workflowsteps %}
+
+                        <tr>
+
+                            <td>
+                                <span class="workflow-request-id">
+                                    {{i.request_id}}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{i.request_name}}
+                            </td>
+
+                            <td>
+                                <span class="workflow-request-id">
+                                    {{i.created_request_id}}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{i.dept_name}}
+                            </td>
+
+                            <td>
+                                {{i.approver_id}}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    {{i.approver_name}}
+                                </strong>
+                            </td>
+
+                            <td>
+
+                                <span class="workflow-status">
+
+                                    <span class="workflow-status-dot"></span>
+
+                                    {{i.status}}
+
+                                </span>
+
+                            </td>
+                            <td>
+                                <a href="{% url 'removefromworkflow' i.id i.created_request_id %}">
+                                    <button class="bg-danger text-white rounded-3 fs-6 fw-bold border">-</button>
+                                </a>
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                    <tfoot>
+                    </tfoot>
+
+                </table>
+
+                {% else %}
+
+                <div class="empty-workflow">
+
+                    <!-- <div class="empty-workflow-icon">
+                        🔗
+                    </div> -->
+
+                    <h5>
+                        No Workflow Steps Added
+                    </h5>
+
+                    <p>
+                        Search for an employee below to add the first approval step.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Employee Search -->
+    <section class="section">
+
+        <div class="section-heading">
+
+            <div class="section-heading-left">
+
+                <!-- <div class="section-icon">
+                    🔎
+                </div> -->
+
+                <div>
+
+                    <h4>
+                        Find Employees
+                    </h4>
+
+                    <p>
+                        Search for an employee using their ID or department.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="search-card">
+
+            <div class="search-card-header">
+
+                <h5>
+                    Search Employees
+                </h5>
+
+                <p>
+                    Enter one or both fields to find eligible workflow approvers.
+                </p>
+
+            </div>
+
+            <form action="{% url 'loadgenerateworkflow' cr_id %}"
+                  method="post">
+
+                {% csrf_token %}
+
+                <div class="search-form">
+
+                    <div>
+
+                        <label class="form-label" for="user-id">
+                            Employee ID
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="user-id"
+                            name="user-id"
+                            placeholder="Enter employee ID"
+                        >
+
+                    </div>
+
+                    <div>
+
+                        <label class="form-label" for="user-department">
+                            Department
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="user-department"
+                            name="user-department"
+                            placeholder="Enter department"
+                        >
+
+                    </div>
+
+                    <div>
+
+                        <button type="submit"
+                                class="search-btn">
+                             Search
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- Employees -->
+        <div class="table-card">
+
+            <div class="table-responsive">
+
+                <table class="table employee-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Password</th>
+                            <th>Role</th>
+                            <th>Department ID</th>
+                            <th>Department Name</th>
+                            <th>Add to Workflow</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for x in users %}
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{x.id}}
+                                </strong>
+                            </td>
+
+                            <td>
+                                <span class="employee-name">
+                                    {{x.name}}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{x.username}}
+                            </td>
+
+                            <td>
+                                {{x.password}}
+                            </td>
+
+                            <td>
+
+                                <span class="employee-role">
+                                    {{x.role}}
+                                </span>
+
+                            </td>
+
+                            <td>
+                                {{x.department_id}}
+                            </td>
+
+                            <td>
+                                {{x.department.dept_name}}
+                            </td>
+
+                            <td>
+
+                                <a href="{% url 'generateworkflowstep' x.id cr_id %}"
+                                   class="add-btn">
+                                    + Add
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="8">
+
+                                <div class="empty-workflow">
+
+                                    <!-- <div class="empty-workflow-icon">
+                                        👤
+                                    </div> -->
+
+                                    <h5>
+                                        No Employees Found
+                                    </h5>
+
+                                    <p>
+                                        Try searching with a different employee ID or department.
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                    <tfoot>
+                    </tfoot>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Bottom Finish -->
+    <div class="bottom-action">
+
+        <a href="{% url 'finishmakingflow' cr_id %}"
+           class="finish-btn">
+             Finish & Save Workflow
+        </a>
+
+    </div>
+
+</main>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body> </html>

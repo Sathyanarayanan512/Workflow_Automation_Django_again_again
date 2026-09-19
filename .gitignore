@@ -1,0 +1,16 @@
+# Django specific files
+*.py[cod]
+__pycache__/
+db.sqlite3
+media/
+
+# Environment and Virtual Environments
+wa_venv1_with_bs_Copy/
+env/
+ENV/
+.env
+*.log
+
+# IDE files
+.vscode/
+.idea/

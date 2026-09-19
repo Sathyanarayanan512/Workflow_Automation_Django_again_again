@@ -1,0 +1,460 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    <h1>REGISTER</h1>
+    <h2>{{message}}</h2>
+    <form action="{% url 'userregister' %}" method="post">
+        {% csrf_token %}
+        <label>Name: </label>
+        <input type="text" name="name"/><br>
+        <label>Username: </label>
+        <input type="text" name="username"/><br>
+        <label>Password: </label>
+        <input type="password" name="password"/><br>
+        <label>Role: </label>
+        <select name="role">
+            {% for i in roles %}
+            <option value="{{i.role_name}}">{{i.role_name}}</option>
+            {% endfor %}
+        </select><br>
+        <label>Department: </label>
+        <select name="departmentId">
+            <option value="" selected disabled>--Select Department--</option>
+            {% for i in depts %}
+            <option value="{{i.id}}">{{i.dept_name}}</option>
+            {% endfor %}
+        </select><br>
+        <input type="submit" value="Register"/>
+    </form>
+</body>
+</html> -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <div class="container min-vh-100 d-flex justify-content-center align-items-center py-5">
+
+        <div class="card shadow-lg border-0 rounded-4 p-4 p-md-5"
+             style="max-width: 550px; width: 100%;">
+
+            <div class="text-center mb-4">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                     style="width: 70px; height: 70px;">
+                    <span class="fs-3">👤</span>
+                </div>
+
+                <h1 class="fw-bold text-dark">REGISTER</h1>
+                <p class="text-muted">Create your account</p>
+            </div>
+
+            {% if message %}
+            <div class="alert alert-info text-center">
+                {{message}}
+            </div>
+            {% endif %}
+
+            <form action="{% url 'userregister' %}" method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Name</label>
+                    <input type="text"
+                           name="name"
+                           class="form-control form-control-lg"
+                           placeholder="Enter your name"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Username</label>
+                    <input type="text"
+                           name="username"
+                           class="form-control form-control-lg"
+                           placeholder="Enter username"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Password</label>
+                    <input type="password"
+                           name="password"
+                           class="form-control form-control-lg"
+                           placeholder="Enter password"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Role</label>
+                    <select name="role" class="form-select form-select-lg">
+                        {% for i in roles %}
+                        <option value="{{i.role_name}}">{{i.role_name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Department</label>
+                    <select name="departmentId" class="form-select form-select-lg">
+                        <option value="" selected disabled>--Select Department--</option>
+                        {% for i in depts %}
+                        <option value="{{i.id}}">{{i.dept_name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="d-grid">
+                    <input type="submit"
+                           value="Register"
+                           class="btn btn-primary btn-lg rounded-3 fw-semibold"/>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html> -->
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register | Workflow Automation</title>
+
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body {
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #eef2ff 0%, #f8faff 50%, #e0e7ff 100%);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar {
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .navbar-brand {
+        font-weight: 700;
+        color: #4f46e5 !important;
+        letter-spacing: 0.3px;
+    }
+
+    .page-section {
+        min-height: calc(100vh - 72px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 45px 20px;
+    }
+
+    .register-card {
+        width: 100%;
+        max-width: 600px;
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 22px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(31, 41, 55, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .register-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .register-icon {
+        width: 65px;
+        height: 65px;
+        margin: 0 auto 18px;
+        border-radius: 18px;
+        background: #eef2ff;
+        color: #4f46e5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+    }
+
+    .register-header h1 {
+        font-size: 2rem;
+        font-weight: 750;
+        color: #111827;
+        margin-bottom: 8px;
+    }
+
+    .register-header p {
+        color: #6b7280;
+        margin-bottom: 0;
+    }
+
+    .message-box {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1d4ed8;
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin-bottom: 22px;
+        font-size: 0.95rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 7px;
+    }
+
+    .form-control,
+    .form-select {
+        min-height: 48px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 10px 14px;
+        color: #1f2937;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    }
+
+    .form-group {
+        margin-bottom: 19px;
+    }
+
+    .register-btn {
+        width: 100%;
+        min-height: 50px;
+        border: none;
+        border-radius: 10px;
+        background: #4f46e5;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-top: 8px;
+        transition: all 0.25s ease;
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.22);
+    }
+
+    .register-btn:hover {
+        background: #4338ca;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(79, 70, 229, 0.3);
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 22px;
+        color: #6b7280;
+        font-size: 0.92rem;
+    }
+
+    .login-link a {
+        color: #4f46e5;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 576px) {
+        .page-section {
+            padding: 25px 15px;
+        }
+
+        .register-card {
+            padding: 30px 22px;
+            border-radius: 18px;
+        }
+
+        .register-header h1 {
+            font-size: 1.7rem;
+        }
+    }
+</style>
+
+</head> <body>
+<!-- Navigation -->
+<nav class="navbar shadow-sm py-3">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            Workflow Automation
+        </a>
+
+        <span class="text-muted small d-none d-sm-block">
+            Approval Engine
+        </span>
+    </div>
+</nav>
+
+<!-- Registration Section -->
+<main class="page-section">
+
+    <div class="register-card">
+
+        <!-- Header -->
+        <div class="register-header">
+
+            <div class="register-icon">
+                👤
+            </div>
+
+            <h1>Create Your Account</h1>
+
+            <p>
+                Register to access the Workflow Automation & Approval Engine
+            </p>
+
+        </div>
+
+        <!-- Django Message -->
+        {% if message %}
+        <div class="message-box">
+            {{message}}
+        </div>
+        {% endif %}
+
+        <!-- Registration Form -->
+        <form action="{% url 'userregister' %}" method="post">
+
+            {% csrf_token %}
+
+            <!-- Name -->
+            <div class="form-group">
+                <label class="form-label" for="name">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your full name"
+                    required
+                >
+            </div>
+
+            <!-- Username -->
+            <div class="form-group">
+                <label class="form-label" for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    name="username"
+                    placeholder="Choose a username"
+                    required
+                >
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label class="form-label" for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    name="password"
+                    placeholder="Create a secure password"
+                    required
+                >
+            </div>
+
+            <!-- Role -->
+            <div class="form-group">
+                <label class="form-label" for="role">
+                    Role
+                </label>
+
+                <select
+                    class="form-select"
+                    id="role"
+                    name="role"
+                    required
+                >
+                    <option value="" selected disabled>
+                        -- Select Role --
+                    </option>
+
+                    {% for i in roles %}
+                    <option value="{{i.role_name}}">
+                        {{i.role_name}}
+                    </option>
+                    {% endfor %}
+
+                </select>
+            </div>
+
+            <!-- Department -->
+            <div class="form-group">
+                <label class="form-label" for="departmentId">
+                    Department
+                </label>
+
+                <select
+                    class="form-select"
+                    id="departmentId"
+                    name="departmentId"
+                    required
+                >
+                    <option value="" selected disabled>
+                        -- Select Department --
+                    </option>
+
+                    {% for i in depts %}
+                    <option value="{{i.id}}">
+                        {{i.dept_name}}
+                    </option>
+                    {% endfor %}
+
+                </select>
+            </div>
+
+            <!-- Submit -->
+            <input
+                type="submit"
+                value="Create Account"
+                class="register-btn"
+            >
+
+        </form>
+
+        <div class="login-link">
+            Already have an account?
+            <a href="{% url 'userlogin' %}">Login here</a>
+        </div>
+
+    </div>
+
+</main>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body> </html>
